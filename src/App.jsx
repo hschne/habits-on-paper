@@ -11,13 +11,39 @@ function App() {
 
   const [habits, setHabits] = useState([]);
 
-  const Wizard = () => {
+  const Wizard = (habit) => {
     return (
       <>
         <input value={name} onChange={(e) => setName(e.target.value)} />
+        <input
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+        <input
+          type="color"
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+        />
+        <select
+          value={icon} // ...force the select's value to match the state variable...
+          onChange={(e) => setIcon(e.target.value)} // ... and update the state variable on any change!
+        >
+          <option value="apple">Apple</option>
+          <option value="banana">Banana</option>
+          <option value="orange">Orange</option>
+        </select>
         <button
           onClick={() => {
-            setHabits([...habits, { id: nextId++, name: name }]);
+            setHabits([
+              ...habits,
+              {
+                id: nextId++,
+                name: name,
+                description: description,
+                color: color,
+                icon: icon,
+              },
+            ]);
           }}
         >
           Add
@@ -30,7 +56,17 @@ function App() {
     return (
       <li key={habit.id}>
         <h2>{habit.name}</h2>
+        <p>{habit.description}</p>
+        <p>{habit.color}</p>
+        <p>{habit.icon}</p>
         {Grid()}
+        <button
+          onClick={() => {
+            setHabits(habits.filter((a) => a.id !== habit.id));
+          }}
+        >
+          Edit
+        </button>
         <button
           onClick={() => {
             setHabits(habits.filter((a) => a.id !== habit.id));
