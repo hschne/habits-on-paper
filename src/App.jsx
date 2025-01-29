@@ -11,7 +11,7 @@ function App() {
 
   const [habits, setHabits] = useState([]);
 
-  const Wizard = (habit) => {
+  const Wizard = () => {
     return (
       <>
         <input value={name} onChange={(e) => setName(e.target.value)} />
@@ -97,8 +97,28 @@ function App() {
     );
   };
 
+  const Header = () => {
+    return (
+      <header>
+        <a href="#" className="logo">
+          LOGO
+        </a>
+
+        <ul className="links">
+          <li>
+            <a href="#">GitHub</a>
+          </li>
+          <li>
+            <a href="about">About</a>
+          </li>
+        </ul>
+      </header>
+    );
+  };
+
   return (
     <>
+      <Header />
       {Wizard()}
       <ul>{habits.map((habit) => Habit(habit))}</ul>
     </>

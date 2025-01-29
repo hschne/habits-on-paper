@@ -1,12 +1,26 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
 ul {
   list-style-type: none;
+}
+
+body {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding-inline: var(--space-md);
+}
+
+header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-block: var(--space-md);
+}
+
+.links {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-md);
+  list-style: none;
 }
 
 .grid-container {
