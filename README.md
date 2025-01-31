@@ -1,8 +1,16 @@
-# React + Vite
+# Habits on Paper
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Create beautiful printouts to track your habits. Inspired by [HabitKit](https://www.habitkit.app/).
 
-Currently, two official plugins are available:
+TODO:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Fix remove habit
+- Add create/edit dialog
+- Add settings dialog
+- Fix print css
+- Fix responsive css
+- Add colorpicker (use print-friendly color)
+- Add iconpicker
+- Add footer w info
+- Nice logo + favicon
+- Fixup domain
