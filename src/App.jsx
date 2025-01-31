@@ -1,5 +1,17 @@
 import { useState } from "react";
+import {
+  Printer,
+  CirclePlus,
+  Settings,
+  BookOpenText,
+  Pencil,
+  Camera,
+  Dumbbell,
+  Trash,
+} from "lucide-react";
+import Logo from "./assets/logo.svg";
 import "./App.css";
+import "./variables.css";
 
 let nextId = 0;
 
@@ -9,7 +21,26 @@ function App() {
   const [color, setColor] = useState("");
   const [icon, setIcon] = useState("");
 
-  const [habits, setHabits] = useState([]);
+  const [habits, setHabits] = useState([
+    {
+      name: "Workout",
+      description: "Work on those muscles!",
+      icon: Dumbbell,
+      color: "",
+    },
+    {
+      name: "Photography",
+      description: "Take a nice picture every day.",
+      icon: Camera,
+      color: "",
+    },
+    {
+      name: "Reading",
+      description: "At least fifteen minutes of reading.",
+      icon: BookOpenText,
+      color: "",
+    },
+  ]);
 
   const Wizard = () => {
     return (
@@ -53,27 +84,35 @@ function App() {
   };
 
   const Habit = (habit) => {
+    const Icon = habit.icon;
     return (
-      <li key={habit.id}>
-        <h2>{habit.name}</h2>
-        <p>{habit.description}</p>
-        <p>{habit.color}</p>
-        <p>{habit.icon}</p>
+      <li className="habit" key={habit.id}>
+        <div className="habit__header">
+          <Icon className="habit__icon" color="currentColor" strokeWidth="2" />
+          <div className="habit__text">
+            <h2>{habit.name}</h2>
+            <p>{habit.description}</p>
+          </div>
+          <div className="habit__buttons">
+            <button
+              onClick={() => {
+                setHabits(habits.filter((a) => a.id !== habit.id));
+              }}
+            >
+              <Pencil size={24} color="currentColor" />
+              Edit
+            </button>
+            <button
+              onClick={() => {
+                setHabits(habits.filter((a) => a.id !== habit.id));
+              }}
+            >
+              <Trash size={24} color="currentColor" />
+              Delete
+            </button>
+          </div>
+        </div>
         {Grid()}
-        <button
-          onClick={() => {
-            setHabits(habits.filter((a) => a.id !== habit.id));
-          }}
-        >
-          Edit
-        </button>
-        <button
-          onClick={() => {
-            setHabits(habits.filter((a) => a.id !== habit.id));
-          }}
-        >
-          Delete
-        </button>
       </li>
     );
   };
@@ -87,6 +126,10 @@ function App() {
               {Array.from({ length: 52 }, (_, colIndex) => (
                 <div
                   key={`cell-${rowIndex}-${colIndex}`}
+                  style={{
+                    backgroundColor: "var(--color-grey-200)",
+                    border: "2px solid #0e0e0e",
+                  }}
                   className="grid-box"
                 />
               ))}
@@ -100,16 +143,31 @@ function App() {
   const Header = () => {
     return (
       <header>
-        <a href="#" className="logo">
-          LOGO
-        </a>
+        <div className="logoText">
+          <a href="#" className="logo">
+            <Logo></Logo>
+          </a>
+          <p>Create beautiful printouts for tracking your habits</p>
+        </div>
 
         <ul className="links">
           <li>
-            <a href="#">GitHub</a>
+            <button onClick={() => {}}>
+              <CirclePlus size={24} color="currentColor" />
+              Add
+            </button>
           </li>
           <li>
-            <a href="about">About</a>
+            <button onClick={() => {}}>
+              <Settings size={24} color="currentColor" />
+              Settings
+            </button>
+          </li>
+          <li>
+            <button onClick={() => {}}>
+              <Printer size={24} color="currentColor" />
+              Print
+            </button>
           </li>
         </ul>
       </header>
@@ -119,8 +177,7 @@ function App() {
   return (
     <>
       <Header />
-      {Wizard()}
-      <ul>{habits.map((habit) => Habit(habit))}</ul>
+      <ul className="habits">{habits.map((habit) => Habit(habit))}</ul>
     </>
   );
 }
