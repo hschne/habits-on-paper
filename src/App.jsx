@@ -9,7 +9,7 @@ import {
   Dumbbell,
   Trash,
 } from "lucide-react";
-import Logo from "./assets/logo.svg";
+import logo from "./assets/logo.svg";
 import "./App.css";
 import "./variables.css";
 
@@ -145,7 +145,7 @@ function App() {
       <header>
         <div className="logoText">
           <a href="#" className="logo">
-            <Logo></Logo>
+            <img src={logo} className="logo" alt="Habits on Paper logo" />
           </a>
           <p>Create beautiful printouts for tracking your habits</p>
         </div>
