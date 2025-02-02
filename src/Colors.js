@@ -1,0 +1,17 @@
+export const COLORS = {
+  SLATE: "#64748b",
+  GRAY: "#6b7280",
+  ZINC: "#71717a",
+  STONE: "#78716c",
+  RED: "#ef4444",
+  ORANGE: "#f97316",
+  AMBER: "#f59e0b",
+  YELLOW: "#eab308",
+  LIME: "#84cc16",
+  GREEN: "#22c55e",
+  EMERALD: "#10b981",
+  TEAL: "#14b8a6",
+  CYAN: "#06b6d4",
+  SKY: "#0ea5e9",
+  BLUE: "#3b82f6",
+};

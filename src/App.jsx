@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Printer,
   CirclePlus,
@@ -9,77 +9,170 @@ import {
   Dumbbell,
   Trash,
 } from "lucide-react";
+import { COLORS } from "./Colors";
 import logo from "./assets/logo.svg";
+import "./HabitModal.css";
 import "./App.css";
 import "./variables.css";
 
 let nextId = 0;
 
 function App() {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [color, setColor] = useState("");
-  const [icon, setIcon] = useState("");
-
+  const [editingHabit, setEditingHabit] = useState(null);
+  const modalRef = useRef(null);
   const [habits, setHabits] = useState([
     {
+      id: nextId++,
       name: "Workout",
       description: "Work on those muscles!",
       icon: Dumbbell,
-      color: "",
+      color: COLORS.RED,
     },
     {
+      id: nextId++,
       name: "Photography",
       description: "Take a nice picture every day.",
       icon: Camera,
-      color: "",
+      color: COLORS.BLUE,
     },
     {
+      id: nextId++,
       name: "Reading",
       description: "At least fifteen minutes of reading.",
       icon: BookOpenText,
-      color: "",
+      color: COLORS.GREEN,
     },
   ]);
 
-  const Wizard = () => {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [color, setColor] = useState(COLORS.SLATE);
+  const [icon, setIcon] = useState("Dumbbell");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleSaveHabit({
+      name,
+      description,
+      color,
+      icon: eval(icon), // Note: Using eval here is not ideal but works for this demo
+    });
+  };
+
+  const icons = {
+    Dumbbell,
+    Camera,
+    BookOpenText,
+    Pencil,
+  };
+
+  const handleSaveHabit = (habit) => {
+    if (editingHabit) {
+      setHabits(
+        habits.map((h) =>
+          h.id === editingHabit.id ? { ...habit, id: editingHabit.id } : h,
+        ),
+      );
+    } else {
+      setHabits([...habits, { ...habit, id: nextId++ }]);
+    }
+    modalRef.current.close();
+    setEditingHabit(null);
+  };
+
+  const handleEditHabit = (habit) => {
+    console.log("EDITING!");
+    setEditingHabit(habit);
+    setName(habit.name);
+    setDescription(habit.description);
+    setColor(habit.color);
+    setIcon(Object.keys(icons).find((key) => icons[key] === habit.icon));
+    modalRef.current.showModal();
+  };
+
+  const handleAddHabit = () => {
+    console.log("ADDING!");
+    setEditingHabit(null);
+    setName("");
+    setDescription("");
+    setColor(COLORS.SLATE);
+    setIcon("Dumbbell");
+    modalRef.current.showModal();
+  };
+
+  const handleDeleteHabit = (habitId) => {
+    setHabits(habits.filter((h) => h.id !== habitId));
+  };
+  const HabitModal = () => {
     return (
-      <>
-        <input value={name} onChange={(e) => setName(e.target.value)} />
-        <input
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <input
-          type="color"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-        />
-        <select
-          value={icon} // ...force the select's value to match the state variable...
-          onChange={(e) => setIcon(e.target.value)} // ... and update the state variable on any change!
-        >
-          <option value="apple">Apple</option>
-          <option value="banana">Banana</option>
-          <option value="orange">Orange</option>
-        </select>
-        <button
-          onClick={() => {
-            setHabits([
-              ...habits,
-              {
-                id: nextId++,
-                name: name,
-                description: description,
-                color: color,
-                icon: icon,
-              },
-            ]);
-          }}
-        >
-          Add
-        </button>
-      </>
+      <dialog ref={modalRef} className="habit-modal">
+        <form onSubmit={handleSubmit}>
+          <h2>{editingHabit ? "Edit Habit" : "New Habit"}</h2>
+
+          <div className="form-group">
+            <label htmlFor="name">Name</label>
+            <input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="description">Description</label>
+            <input
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="icon">Icon</label>
+            <select
+              id="icon"
+              value={icon}
+              onChange={(e) => setIcon(e.target.value)}
+            >
+              {Object.keys(icons).map((iconName) => (
+                <option key={iconName} value={iconName}>
+                  {iconName}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="color">Color</label>
+            <div className="color-options">
+              {Object.entries(COLORS).map(([name, value]) => (
+                <label key={name} className="color-option">
+                  <input
+                    type="radio"
+                    name="color"
+                    value={value}
+                    checked={color === value}
+                    onChange={(e) => setColor(e.target.value)}
+                  />
+                  <span
+                    className="color-swatch"
+                    style={{ backgroundColor: value }}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="modal-actions">
+            <button type="button" onClick={() => modalRef.current.close()}>
+              Cancel
+            </button>
+            <button type="submit">Save</button>
+          </div>
+        </form>
+      </dialog>
     );
   };
 
@@ -94,19 +187,11 @@ function App() {
             <p>{habit.description}</p>
           </div>
           <div className="habit__buttons">
-            <button
-              onClick={() => {
-                setHabits(habits.filter((a) => a.id !== habit.id));
-              }}
-            >
+            <button onClick={() => handleEditHabit(habit)}>
               <Pencil size={24} color="currentColor" />
               Edit
             </button>
-            <button
-              onClick={() => {
-                setHabits(habits.filter((a) => a.id !== habit.id));
-              }}
-            >
+            <button onClick={() => handleDeleteHabit(habit.id)}>
               <Trash size={24} color="currentColor" />
               Delete
             </button>
@@ -152,7 +237,7 @@ function App() {
 
         <ul className="links">
           <li>
-            <button onClick={() => {}}>
+            <button onClick={handleAddHabit}>
               <CirclePlus size={24} color="currentColor" />
               Add
             </button>
@@ -178,6 +263,7 @@ function App() {
     <>
       <Header />
       <ul className="habits">{habits.map((habit) => Habit(habit))}</ul>
+      <HabitModal />
     </>
   );
 }
