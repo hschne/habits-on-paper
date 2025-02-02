@@ -38,7 +38,12 @@ let nextId = 0;
 
 function App() {
   const [editingHabit, setEditingHabit] = useState(null);
-  const modalRef = useRef(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const [errors, setErrors] = useState({
+    name: "",
+    description: "",
+  });
   const [habits, setHabits] = useState([
     {
       id: nextId++,
@@ -70,11 +75,47 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Reset errors
+    setErrors({
+      name: "",
+      description: "",
+    });
+
+    // Validate inputs
+    let hasErrors = false;
+    const newErrors = {
+      name: "",
+      description: "",
+    };
+
+    if (!name.trim()) {
+      newErrors.name = "Name is required";
+      hasErrors = true;
+    } else if (name.length > 30) {
+      newErrors.name = "Name must be less than 30 characters";
+      hasErrors = true;
+    }
+
+    if (!description.trim()) {
+      newErrors.description = "Description is required";
+      hasErrors = true;
+    } else if (description.length > 100) {
+      newErrors.description = "Description must be less than 100 characters";
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // If validation passes, save the habit
     handleSaveHabit({
       name,
       description,
       color,
-      icon: eval(icon), // Note: Using eval here is not ideal but works for this demo
+      icon: eval(icon),
     });
   };
 
@@ -113,28 +154,27 @@ function App() {
     } else {
       setHabits([...habits, { ...habit, id: nextId++ }]);
     }
-    modalRef.current.close();
+    setModalOpen(false);
     setEditingHabit(null);
   };
 
   const handleEditHabit = (habit) => {
-    console.log("EDITING!");
     setEditingHabit(habit);
     setName(habit.name);
     setDescription(habit.description);
     setColor(habit.color);
     setIcon(Object.keys(icons).find((key) => icons[key] === habit.icon));
-    modalRef.current.showModal();
+    setModalOpen(true);
   };
 
+  // Update handleAddHabit
   const handleAddHabit = () => {
-    console.log("ADDING!");
     setEditingHabit(null);
     setName("");
     setDescription("");
     setColor(COLORS.SLATE);
     setIcon("Dumbbell");
-    modalRef.current.showModal();
+    setModalOpen(true);
   };
 
   const handleDeleteHabit = (habitId) => {
@@ -142,8 +182,16 @@ function App() {
   };
   const HabitModal = () => {
     return (
-      <dialog ref={modalRef} className="habit-modal">
-        <form onSubmit={handleSubmit}>
+      <dialog
+        open={modalOpen}
+        className="habit-modal"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            setModalOpen(false);
+          }
+        }}
+      >
+        <form onSubmit={handleSubmit} onClick={(e) => e.stopPropagation()}>
           <h2>{editingHabit ? "Edit Habit" : "New Habit"}</h2>
 
           <div className="form-group">
@@ -152,8 +200,26 @@ function App() {
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className={errors.name ? "error" : ""}
               required
             />
+            {errors.name && (
+              <span className="error-message">{errors.name}</span>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="description">Description</label>
+            <input
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className={errors.description ? "error" : ""}
+              required
+            />
+            {errors.description && (
+              <span className="error-message">{errors.description}</span>
+            )}
           </div>
 
           <div className="form-group">
@@ -199,7 +265,7 @@ function App() {
           </div>
 
           <div className="modal-actions">
-            <button type="button" onClick={() => modalRef.current.close()}>
+            <button type="button" onClick={() => setModalOpen(false)}>
               Cancel
             </button>
             <button type="submit">Save</button>
