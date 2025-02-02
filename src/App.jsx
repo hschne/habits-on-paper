@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   Printer,
   CirclePlus,
@@ -40,10 +40,6 @@ function App() {
   const [editingHabit, setEditingHabit] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const [errors, setErrors] = useState({
-    name: "",
-    description: "",
-  });
   const [habits, setHabits] = useState([
     {
       id: nextId++,
@@ -72,52 +68,6 @@ function App() {
   const [description, setDescription] = useState("");
   const [color, setColor] = useState(COLORS.SLATE);
   const [icon, setIcon] = useState("Dumbbell");
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Reset errors
-    setErrors({
-      name: "",
-      description: "",
-    });
-
-    // Validate inputs
-    let hasErrors = false;
-    const newErrors = {
-      name: "",
-      description: "",
-    };
-
-    if (!name.trim()) {
-      newErrors.name = "Name is required";
-      hasErrors = true;
-    } else if (name.length > 30) {
-      newErrors.name = "Name must be less than 30 characters";
-      hasErrors = true;
-    }
-
-    if (!description.trim()) {
-      newErrors.description = "Description is required";
-      hasErrors = true;
-    } else if (description.length > 100) {
-      newErrors.description = "Description must be less than 100 characters";
-      hasErrors = true;
-    }
-
-    if (hasErrors) {
-      setErrors(newErrors);
-      return;
-    }
-
-    // If validation passes, save the habit
-    handleSaveHabit({
-      name,
-      description,
-      color,
-      icon: eval(icon),
-    });
-  };
 
   const icons = {
     Dumbbell,
@@ -180,7 +130,61 @@ function App() {
   const handleDeleteHabit = (habitId) => {
     setHabits(habits.filter((h) => h.id !== habitId));
   };
+  // Update the HabitModal component to be memoized and handle its own state
   const HabitModal = () => {
+    // Move form state into the modal component
+    const [formData, setFormData] = useState({
+      name: editingHabit?.name || "",
+      description: editingHabit?.description || "",
+      color: editingHabit?.color || COLORS.SLATE,
+      icon: editingHabit?.icon
+        ? Object.keys(icons).find((key) => icons[key] === editingHabit.icon)
+        : "Dumbbell",
+    });
+
+    // Update form data when editing habit changes
+    useEffect(() => {
+      if (editingHabit) {
+        setFormData({
+          name: editingHabit.name,
+          description: editingHabit.description,
+          color: editingHabit.color,
+          icon: Object.keys(icons).find(
+            (key) => icons[key] === editingHabit.icon,
+          ),
+        });
+      } else {
+        setFormData({
+          name: "",
+          description: "",
+          color: COLORS.SLATE,
+          icon: "Dumbbell",
+        });
+      }
+    }, [editingHabit]);
+
+    const [errors, setErrors] = useState({
+      name: "",
+      description: "",
+    });
+
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      handleSaveHabit({
+        name: formData.name,
+        description: formData.description,
+        color: formData.color,
+        icon: icons[formData.icon],
+      });
+    };
+
+    const handleInputChange = (field, value) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    };
+
     return (
       <dialog
         open={modalOpen}
@@ -198,28 +202,21 @@ function App() {
             <label htmlFor="name">Name</label>
             <input
               id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className={errors.name ? "error" : ""}
+              value={formData.name}
+              onChange={(e) => handleInputChange("name", e.target.value)}
               required
             />
-            {errors.name && (
-              <span className="error-message">{errors.name}</span>
-            )}
           </div>
 
           <div className="form-group">
             <label htmlFor="description">Description</label>
             <input
               id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={formData.description}
+              onChange={(e) => handleInputChange("description", e.target.value)}
               className={errors.description ? "error" : ""}
               required
             />
-            {errors.description && (
-              <span className="error-message">{errors.description}</span>
-            )}
           </div>
 
           <div className="form-group">
@@ -231,8 +228,8 @@ function App() {
                     type="radio"
                     name="icon"
                     value={iconName}
-                    checked={icon === iconName}
-                    onChange={(e) => setIcon(e.target.value)}
+                    checked={formData.icon === iconName}
+                    onChange={(e) => handleInputChange("icon", e.target.value)}
                   />
                   <span className="icon-preview">
                     <IconComponent size={24} />
@@ -252,8 +249,8 @@ function App() {
                     type="radio"
                     name="color"
                     value={value}
-                    checked={color === value}
-                    onChange={(e) => setColor(e.target.value)}
+                    checked={formData.color === value}
+                    onChange={(e) => handleInputChange("color", e.target.value)}
                   />
                   <span
                     className="color-swatch"
