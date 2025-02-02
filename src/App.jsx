@@ -8,10 +8,29 @@ import {
   Camera,
   Dumbbell,
   Trash,
+  Brain,
+  Coffee,
+  Code,
+  Compass,
+  Gamepad2,
+  Heart,
+  Laptop,
+  Leaf,
+  Palette,
+  PenTool,
+  Bike,
+  Soup,
+  Sun,
+  Swords,
+  Target,
+  Trees,
+  Trophy,
+  Zap,
 } from "lucide-react";
 import { COLORS } from "./Colors";
 import logo from "./assets/logo.svg";
 import "./HabitModal.css";
+import "./IconPicker.css";
 import "./App.css";
 import "./variables.css";
 
@@ -64,6 +83,24 @@ function App() {
     Camera,
     BookOpenText,
     Pencil,
+    Brain,
+    Coffee,
+    Code,
+    Compass,
+    Gamepad2,
+    Heart,
+    Laptop,
+    Leaf,
+    Palette,
+    PenTool,
+    Bike,
+    Soup,
+    Sun,
+    Swords,
+    Target,
+    Trees,
+    Trophy,
+    Zap,
   };
 
   const handleSaveHabit = (habit) => {
@@ -120,28 +157,24 @@ function App() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="description">Description</label>
-            <input
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
             <label htmlFor="icon">Icon</label>
-            <select
-              id="icon"
-              value={icon}
-              onChange={(e) => setIcon(e.target.value)}
-            >
-              {Object.keys(icons).map((iconName) => (
-                <option key={iconName} value={iconName}>
-                  {iconName}
-                </option>
+            <div className="icon-options">
+              {Object.entries(icons).map(([iconName, IconComponent]) => (
+                <label key={iconName} className="icon-option">
+                  <input
+                    type="radio"
+                    name="icon"
+                    value={iconName}
+                    checked={icon === iconName}
+                    onChange={(e) => setIcon(e.target.value)}
+                  />
+                  <span className="icon-preview">
+                    <IconComponent size={24} />
+                    <span className="icon-name">{iconName}</span>
+                  </span>
+                </label>
               ))}
-            </select>
+            </div>
           </div>
 
           <div className="form-group">
