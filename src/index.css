@@ -4,8 +4,6 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: var(--color-text);
-  background-color: var(--color-background);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

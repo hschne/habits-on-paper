@@ -29,8 +29,6 @@ import {
 } from "lucide-react";
 import { COLORS } from "./Colors";
 import logo from "./assets/logo.svg";
-import "./HabitModal.css";
-import "./IconPicker.css";
 import "./App.css";
 import "./variables.css";
 
@@ -102,7 +100,7 @@ function App() {
         ),
       );
     } else {
-      setHabits([...habits, { ...habit, id: nextId++ }]);
+      setHabits([{ ...habit, id: nextId++ }, ...habits]);
     }
     setModalOpen(false);
     setEditingHabit(null);
@@ -117,7 +115,6 @@ function App() {
     setModalOpen(true);
   };
 
-  // Update handleAddHabit
   const handleAddHabit = () => {
     setEditingHabit(null);
     setName("");
@@ -130,9 +127,41 @@ function App() {
   const handleDeleteHabit = (habitId) => {
     setHabits(habits.filter((h) => h.id !== habitId));
   };
-  // Update the HabitModal component to be memoized and handle its own state
+
+  const Header = () => {
+    return (
+      <header>
+        <div className="logoText">
+          <a href="#" className="logo">
+            <img src={logo} className="logo" alt="Habits on Paper logo" />
+          </a>
+          <p>Create beautiful printouts for tracking your habits</p>
+        </div>
+
+        <ul className="links">
+          <li>
+            <button onClick={handleAddHabit}>
+              <CirclePlus size={24} color="currentColor" />
+              Add
+            </button>
+          </li>
+          <li>
+            <button onClick={() => {}}>
+              <Settings size={24} color="currentColor" />
+              Settings
+            </button>
+          </li>
+          <li>
+            <button onClick={() => {}}>
+              <Printer size={24} color="currentColor" />
+              Print
+            </button>
+          </li>
+        </ul>
+      </header>
+    );
+  };
   const HabitModal = () => {
-    // Move form state into the modal component
     const [formData, setFormData] = useState({
       name: editingHabit?.name || "",
       description: editingHabit?.description || "",
@@ -142,7 +171,6 @@ function App() {
         : "Dumbbell",
     });
 
-    // Update form data when editing habit changes
     useEffect(() => {
       if (editingHabit) {
         setFormData({
@@ -161,12 +189,7 @@ function App() {
           icon: "Dumbbell",
         });
       }
-    }, [editingHabit]);
-
-    const [errors, setErrors] = useState({
-      name: "",
-      description: "",
-    });
+    }, []);
 
     const handleSubmit = (e) => {
       e.preventDefault();
@@ -214,7 +237,6 @@ function App() {
               id="description"
               value={formData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
-              className={errors.description ? "error" : ""}
               required
             />
           </div>
@@ -318,40 +340,6 @@ function App() {
           ))}
         </div>
       </div>
-    );
-  };
-
-  const Header = () => {
-    return (
-      <header>
-        <div className="logoText">
-          <a href="#" className="logo">
-            <img src={logo} className="logo" alt="Habits on Paper logo" />
-          </a>
-          <p>Create beautiful printouts for tracking your habits</p>
-        </div>
-
-        <ul className="links">
-          <li>
-            <button onClick={handleAddHabit}>
-              <CirclePlus size={24} color="currentColor" />
-              Add
-            </button>
-          </li>
-          <li>
-            <button onClick={() => {}}>
-              <Settings size={24} color="currentColor" />
-              Settings
-            </button>
-          </li>
-          <li>
-            <button onClick={() => {}}>
-              <Printer size={24} color="currentColor" />
-              Print
-            </button>
-          </li>
-        </ul>
-      </header>
     );
   };
 
